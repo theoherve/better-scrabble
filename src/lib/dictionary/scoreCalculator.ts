@@ -33,6 +33,7 @@ export class ScoreCalculator {
     const letterMultipliers = this.getLetterMultipliers(positions);
     const wordMultipliers = this.getWordMultipliers(positions);
 
+    // Vérifier si le mot contient des lettres placées
     console.log(placedLetters);
 
     // Calculer le score de base avec les multiplicateurs de lettres
