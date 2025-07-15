@@ -45,7 +45,7 @@ export const PlayerRack = ({
   return (
     <div className={`bg-amber-800 p-4 rounded-lg ${className}`}>
       <h3 className="text-white font-medium mb-3">Vos lettres</h3>
-      <div className="flex gap-1 justify-center flex-wrap">
+      <div className="flex gap-1 justify-center flex-nowrap">
         {letters.map((letter) => (
           <Tile
             key={letter.id}
@@ -55,7 +55,7 @@ export const PlayerRack = ({
             isSelected={selectedLetterId === letter.id}
             onClick={() => handleLetterClick(letter.id)}
             className={`
-              w-8 h-8 sm:w-10 sm:h-10 cursor-pointer hover:scale-105 active:scale-95 transition-transform
+              w-[calc(100%/7-0.125rem)] h-8 sm:h-10 md:h-12 aspect-square cursor-pointer hover:scale-105 active:scale-95 transition-transform
               ${letter.letter === ' ' ? 'bg-yellow-100 border-yellow-300' : ''}
             `}
           />
