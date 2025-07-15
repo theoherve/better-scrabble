@@ -4,6 +4,7 @@ interface ToastProps {
   message: string;
   type?: 'success' | 'error' | 'info' | 'warning';
   duration?: number;
+  position?: 'left' | 'right';
   onClose?: () => void;
 }
 
@@ -11,6 +12,7 @@ export const Toast = ({
   message, 
   type = 'info', 
   duration = 3000, 
+  position = 'right',
   onClose 
 }: ToastProps) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -31,12 +33,17 @@ export const Toast = ({
     warning: 'bg-yellow-500 text-white'
   };
 
+  // Animation adaptée selon la position
+  const animationClass = position === 'left' 
+    ? (isVisible ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0')
+    : (isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0');
+
   return (
     <div
       className={`
-        fixed top-4 right-4 z-50 max-w-sm w-full
+        max-w-sm w-full
         transform transition-all duration-300 ease-in-out
-        ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
+        ${animationClass}
       `}
     >
       <div className={`

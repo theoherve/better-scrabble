@@ -114,14 +114,14 @@ function SoloPlayPageContent() {
       }));
 
       if (winner === 'player') {
-        success('Félicitations ! Vous avez gagné ! 🎉');
+        success('Félicitations ! Vous avez gagné ! 🎉', undefined, 'right');
       } else if (winner === 'ai') {
-        error(`${ai.getName()} a gagné ! 😔`);
+        error(`${ai.getName()} a gagné ! 😔`, undefined, 'left');
       } else {
-        info('Match nul ! 🤝');
+        info('Match nul ! 🤝', undefined, 'right');
       }
 
-      info(`Fin de partie : ${finalScores.reason}`);
+      info(`Fin de partie : ${finalScores.reason}`, undefined, 'right');
     }
   }, [gameState.playerRack, gameState.aiRack, gameState.consecutivePasses, gameState.gameOver, letterBag, ai, success, error, info, gameState.lastPlayerToPlay, gameState.playerScore, gameState.aiScore]);
 
@@ -273,7 +273,7 @@ function SoloPlayPageContent() {
     );
 
     if (isOccupied) {
-      error('Cette position est déjà occupée');
+      error('Cette position est déjà occupée', undefined, 'right');
       return;
     }
 
@@ -286,7 +286,7 @@ function SoloPlayPageContent() {
     );
 
     if (!placementValidation.isValid) {
-      error(placementValidation.errors[0]);
+      error(placementValidation.errors[0], undefined, 'right');
       return;
     }
 
@@ -337,7 +337,7 @@ function SoloPlayPageContent() {
     );
 
     if (!placementValidation.isValid) {
-      error(placementValidation.errors[0]);
+      error(placementValidation.errors[0], undefined, 'right');
       return;
     }
 
@@ -366,9 +366,9 @@ function SoloPlayPageContent() {
         lastPlayerToPlay: 'player'
       }));
 
-      success(`Mot validé ! Score : ${wordValidation.totalScore} points`);
+      success(`Mot validé ! Score : ${wordValidation.totalScore} points`, undefined, 'right');
     } else {
-      error('Mot invalide. Vérifiez que tous les mots formés sont valides.');
+      error('Mot invalide. Vérifiez que tous les mots formés sont valides.', undefined, 'right');
     }
   };
 
@@ -399,14 +399,15 @@ function SoloPlayPageContent() {
   };
 
   const handlePassTurn = () => {
-    if (gameState.currentTurn === 'player' && !gameState.gameOver) {
-      setGameState(prev => ({
-        ...prev,
-        currentTurn: 'ai',
-        consecutivePasses: prev.consecutivePasses + 1
-      }));
-      info('Vous passez votre tour');
-    }
+    if (gameState.currentTurn !== 'player' || gameState.isPlacingWord) return;
+    setGameState(prev => ({
+      ...prev,
+      currentTurn: 'ai',
+      consecutivePasses: prev.consecutivePasses + 1,
+      isPlacingWord: false,
+      tempPlacedLetters: []
+    }));
+    info('Vous passez votre tour', undefined, 'right');
   };
 
   const handleExchangeLetters = () => {
@@ -417,29 +418,15 @@ function SoloPlayPageContent() {
 
   const handleExchangeConfirm = (letterIds: string[]) => {
     if (letterIds.length === 0) return;
-
-    // Échanger les lettres
-    const lettersToReturn = gameState.playerRack.filter(letter => 
-      letterIds.includes(letter.id)
-    );
-
-    const newLetters = letterBag.draw(lettersToReturn.length);
-    letterBag.returnLetters(lettersToReturn);
-
-    const newPlayerRack = [
-      ...gameState.playerRack.filter(letter => !letterIds.includes(letter.id)),
-      ...newLetters
-    ];
-
     setGameState(prev => ({
       ...prev,
-      playerRack: newPlayerRack,
+      playerRack: prev.playerRack.filter(l => !letterIds.includes(l.id)),
       currentTurn: 'ai',
-      consecutivePasses: prev.consecutivePasses + 1
+      consecutivePasses: 0,
+      isPlacingWord: false,
+      tempPlacedLetters: []
     }));
-
-    setShowLetterExchange(false);
-    info(`Vous avez échangé ${letterIds.length} lettre${letterIds.length > 1 ? 's' : ''}`);
+    info(`Vous avez échangé ${letterIds.length} lettre${letterIds.length > 1 ? 's' : ''}`, undefined, 'right');
   };
 
   const handleNewGame = () => {
@@ -477,7 +464,7 @@ function SoloPlayPageContent() {
       errors: []
     });
     setWordScores([]);
-    success('Nouvelle partie commencée !');
+    success('Nouvelle partie commencée !', undefined, 'right');
   };
 
   const isMyTurn = gameState.currentTurn === 'player' && !gameState.gameOver;
@@ -737,7 +724,7 @@ function SoloPlayPageContent() {
 
       {/* Indicateur de chargement pour l'IA */}
       {isThinking && (
-        <div className="fixed top-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 flex items-center gap-3 z-50 animate-fade-in">
+        <div className="fixed top-4 left-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4 flex items-center gap-3 z-50 animate-fade-in">
           <LoadingSpinner />
           <div>
             <div className="font-medium text-gray-900">{ai.getName()} réfléchit...</div>
