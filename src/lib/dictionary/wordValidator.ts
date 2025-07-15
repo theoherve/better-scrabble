@@ -1,6 +1,6 @@
 import { GridPosition, PlacedLetter } from "@/components/grid/Grid";
 import { isValidWord } from "./dictionary";
-import { ScoreCalculator, WordScore } from "./scoreCalculator";
+import { ScoreCalculator } from "./scoreCalculator";
 
 export type WordInfo = {
   word: string;

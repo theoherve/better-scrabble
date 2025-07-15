@@ -60,7 +60,7 @@ export const DictionaryTest = ({ isVisible = false, className = "" }: Dictionary
               </p>
               {testWord && (
                 <p className={`font-medium ${testResults.isValid ? 'text-green-600' : 'text-red-600'}`}>
-                  "{testWord}" est {testResults.isValid ? 'valide' : 'invalide'}
+                  &quot;{testWord}&quot; est {testResults.isValid ? 'valide' : 'invalide'}
                 </p>
               )}
             </div>

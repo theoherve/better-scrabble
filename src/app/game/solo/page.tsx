@@ -21,12 +21,12 @@ export default function SoloGamePage() {
             href="/" 
             className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
           >
-            ← Retour à l'accueil
+            ← Retour à l&apos;accueil
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Mode Solo</h1>
-          <p className="text-gray-600 mt-2">
-            Jouez contre l'IA avec différents niveaux de difficulté
-          </p>
+                      <p className="text-gray-600 mt-2">
+              Jouez contre l&apos;IA avec différents niveaux de difficulté
+            </p>
         </div>
 
         {/* Game Setup */}
@@ -38,7 +38,7 @@ export default function SoloGamePage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre d'IA
+                Nombre d&apos;IA
               </label>
               <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option value="1">1 IA</option>
@@ -78,7 +78,7 @@ export default function SoloGamePage() {
             <li>• Cliquez sur une lettre de votre rack pour la sélectionner</li>
             <li>• Cliquez sur une case de la grille pour placer la lettre</li>
             <li>• Formez des mots valides pour marquer des points</li>
-            <li>• L'IA jouera automatiquement après votre tour</li>
+            <li>• L&apos;IA jouera automatiquement après votre tour</li>
           </ul>
         </div>
       </div>

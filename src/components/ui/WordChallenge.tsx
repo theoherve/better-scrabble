@@ -10,7 +10,6 @@ interface WordChallengeProps {
 
 export const WordChallenge = ({
   isOpen,
-  onClose,
   onChallenge,
   challengedWord,
   timeoutSeconds
@@ -60,7 +59,7 @@ export const WordChallenge = ({
             Contestation de mot
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Le mot <span className="font-bold text-blue-600">"{challengedWord}"</span> a été contesté
+            Le mot <span className="font-bold text-blue-600">&quot;{challengedWord}&quot;</span> a été contesté
           </p>
           
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">

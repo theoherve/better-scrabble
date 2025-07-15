@@ -48,7 +48,7 @@ export default function HomePage() {
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Jouez au Scrabble en ligne avec une interface épurée et intuitive. 
-            Créez des parties privées ou affrontez l'IA.
+            Créez des parties privées ou affrontez l&apos;IA.
           </p>
         </div>
 

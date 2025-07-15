@@ -19,7 +19,7 @@ export const ToastContainer = ({ toasts, onRemove }: ToastContainerProps) => {
     <>
       {/* Toasts à gauche */}
       <div className="fixed top-4 left-4 z-50 space-y-2">
-        {leftToasts.map((toast, index) => (
+        {leftToasts.map((toast) => (
           <Toast
             key={toast.id}
             message={toast.message}
@@ -32,7 +32,7 @@ export const ToastContainer = ({ toasts, onRemove }: ToastContainerProps) => {
       
       {/* Toasts à droite */}
       <div className="fixed top-4 right-4 z-50 space-y-2">
-        {rightToasts.map((toast, index) => (
+        {rightToasts.map((toast) => (
           <Toast
             key={toast.id}
             message={toast.message}

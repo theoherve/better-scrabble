@@ -8,10 +8,9 @@ import { PlayerRack, PlayerLetter } from "@/components/player-panel/PlayerRack";
 import { WordDisplay } from "@/components/grid/WordDisplay";
 import { ScoreDetails } from "@/components/grid/ScoreDetails";
 import { MobileNav } from "@/components/ui/MobileNav";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { LetterBag, Letter } from "@/lib/dictionary/letters";
+import { LetterBag } from "@/lib/dictionary/letters";
 import { WordValidator, WordValidationResult } from "@/lib/dictionary/wordValidator";
-import { ScoreCalculator } from "@/lib/dictionary/scoreCalculator";
+import { ScoreCalculator, WordScore } from "@/lib/dictionary/scoreCalculator";
 import { useLobbyStore } from "@/lib/realtime/lobbyStore";
 
 interface GameState {
@@ -54,7 +53,7 @@ export default function MultiplayerGamePage() {
     isValid: true,
     errors: []
   });
-  const [wordScores, setWordScores] = useState<any[]>([]);
+  const [wordScores, setWordScores] = useState<WordScore[]>([]);
 
   // Initialiser les racks des joueurs si pas encore fait
   useEffect(() => {

@@ -11,7 +11,6 @@ interface WordContestProps {
 
 export const WordContest = ({
   isOpen,
-  onClose,
   onContest,
   contestedWord,
   timeoutSeconds,
@@ -71,7 +70,7 @@ export const WordContest = ({
             <span className="font-medium">{challengerName}</span> conteste le mot :
           </p>
           <p className="text-lg font-bold text-blue-600 mb-4">
-            "{contestedWord}"
+            &quot;{contestedWord}&quot;
           </p>
           
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">

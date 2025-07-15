@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Grid, GridPosition, PlacedLetter } from "@/components/grid/Grid";
@@ -14,7 +14,7 @@ import { DictionaryTest } from "@/components/ui/DictionaryTest";
 import { useToast } from "@/hooks/useToast";
 import { LetterBag, Letter } from "@/lib/dictionary/letters";
 import { WordValidator, WordValidationResult } from "@/lib/dictionary/wordValidator";
-import { ScoreCalculator } from "@/lib/dictionary/scoreCalculator";
+import { ScoreCalculator, WordScore } from "@/lib/dictionary/scoreCalculator";
 import { SimpleAI } from "@/lib/ai/simpleAI";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { JokerSelector } from "@/components/ui/JokerSelector";
@@ -38,7 +38,7 @@ interface GameState {
   lastPlayerToPlay: string;
 }
 
-export default function SoloPlayPage() {
+function SoloPlayPageContent() {
   const searchParams = useSearchParams();
   const difficulty = (searchParams.get('difficulty') as string) || 'medium';
   const { toasts, success, error, info, removeToast } = useToast();
@@ -49,7 +49,7 @@ export default function SoloPlayPage() {
     return bag;
   });
 
-  const [ai] = useState(() => new SimpleAI(difficulty as any, `IA ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}`));
+  const [ai] = useState(() => new SimpleAI(difficulty as 'easy' | 'medium' | 'hard', `IA ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}`));
 
   const [gameState, setGameState] = useState<GameState>(() => ({
     playerRack: letterBag.draw(7).map(letter => ({
@@ -77,7 +77,7 @@ export default function SoloPlayPage() {
     isValid: true,
     errors: []
   });
-  const [wordScores, setWordScores] = useState<any[]>([]);
+  const [wordScores, setWordScores] = useState<WordScore[]>([]);
   const [isThinking, setIsThinking] = useState(false);
 
   // États pour les nouvelles fonctionnalités
@@ -542,7 +542,7 @@ export default function SoloPlayPage() {
             <div className="text-2xl md:text-3xl font-bold text-blue-600">{gameState.playerScore}</div>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">Score de l'IA</h2>
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">Score de l&apos;IA</h2>
             <div className="text-2xl md:text-3xl font-bold text-red-600">{gameState.aiScore}</div>
           </div>
         </div>
@@ -746,5 +746,13 @@ export default function SoloPlayPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SoloPlayPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SoloPlayPageContent />
+    </Suspense>
   );
 } 

@@ -51,7 +51,7 @@ export const LetterExchange = ({
         </h3>
         
         <p className="text-sm text-gray-600 mb-4 text-center">
-          Sélectionnez jusqu'à {maxExchangeCount} lettres à échanger
+          Sélectionnez jusqu&apos;à {maxExchangeCount} lettres à échanger
         </p>
 
         <div className="grid grid-cols-7 gap-2 mb-6 max-h-60 overflow-y-auto">

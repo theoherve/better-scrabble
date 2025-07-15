@@ -21,17 +21,17 @@ export default function LobbyPage() {
     }
   }, [lobby, code, router]);
 
+  // Rediriger vers la page de jeu si la partie a démarré
+  useEffect(() => {
+    if (lobby && lobby.state === 'playing') {
+      router.push(`/game/lobby/${lobby.code}`);
+    }
+  }, [lobby, router]);
+
   if (!lobby || !player) return null;
 
   const isHost = player.isHost;
   const allReady = lobby.players.length > 1 && lobby.players.every(p => p.isReady);
-
-  // Rediriger vers la page de jeu si la partie a démarré
-  useEffect(() => {
-    if (lobby.state === 'playing') {
-      router.push(`/game/lobby/${lobby.code}`);
-    }
-  }, [lobby.state, lobby.code, router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
@@ -77,7 +77,7 @@ export default function LobbyPage() {
             </button>
           )}
         </div>
-        <div className="text-center text-gray-400 text-xs">Partagez ce code avec vos amis pour qu'ils rejoignent le lobby.</div>
+        <div className="text-center text-gray-400 text-xs">Partagez ce code avec vos amis pour qu&apos;ils rejoignent le lobby.</div>
       </div>
     </div>
   );

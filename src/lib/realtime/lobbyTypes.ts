@@ -13,5 +13,5 @@ export type Lobby = {
   players: Player[];
   createdAt: number;
   startedAt?: number;
-  gameData?: any; // Pour la grille, scores, etc.
+  gameData?: Record<string, unknown>; // Pour la grille, scores, etc.
 };

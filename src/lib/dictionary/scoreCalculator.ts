@@ -1,5 +1,5 @@
 import { GridPosition, PlacedLetter } from "@/components/grid/Grid";
-import { getWordScore } from "./dictionary";
+import { PlayerLetter } from "@/components/player-panel/PlayerRack";
 import { gameRules } from "@/lib/gameRules";
 
 export type ScoreMultiplier = {
@@ -32,6 +32,8 @@ export class ScoreCalculator {
     const letterScores = this.getLetterScores(word);
     const letterMultipliers = this.getLetterMultipliers(positions);
     const wordMultipliers = this.getWordMultipliers(positions);
+
+    console.log(placedLetters);
 
     // Calculer le score de base avec les multiplicateurs de lettres
     let baseScore = 0;
@@ -91,7 +93,7 @@ export class ScoreCalculator {
    */
   static calculateFinalScores(
     playerScores: { [playerId: string]: number },
-    playerRacks: { [playerId: string]: any[] },
+    playerRacks: { [playerId: string]: PlayerLetter[] },
     lastPlayerToPlay: string
   ): { scores: { [playerId: string]: number }; reason: string } {
     const finalScores = { ...playerScores };

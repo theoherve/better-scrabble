@@ -1,3 +1,14 @@
+import { PlacedLetter } from "@/components/grid/Grid";
+import { PlayerLetter } from "@/components/player-panel/PlayerRack";
+
+interface GameState {
+  currentTurn: string;
+  gameOver: boolean;
+  letterBagCount: number;
+  playerRacks: { [playerId: string]: PlayerLetter[] };
+  consecutivePasses?: number;
+}
+
 // Règles officielles du Scrabble français
 export interface GameRules {
   // Règles de base
@@ -78,7 +89,7 @@ export interface GameActionData {
   action: GameAction;
   playerId: string;
   timestamp: number;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 // Validation des règles
@@ -94,7 +105,7 @@ export class GameRuleValidator {
    */
   validatePlacement(
     position: { row: number; col: number },
-    existingLetters: any[],
+    existingLetters: PlacedLetter[],
     isFirstMove: boolean = false
   ): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
@@ -128,7 +139,7 @@ export class GameRuleValidator {
    */
   private isConnectedToExistingWord(
     position: { row: number; col: number },
-    existingLetters: any[]
+    existingLetters: PlacedLetter[]
   ): boolean {
     const adjacentPositions = [
       { row: position.row - 1, col: position.col },
@@ -149,7 +160,7 @@ export class GameRuleValidator {
    * Vérifie si la fin de partie est atteinte
    */
   validateEndGameCondition(
-    playerRacks: { [playerId: string]: any[] },
+    playerRacks: { [playerId: string]: PlayerLetter[] },
     letterBagCount: number,
     consecutivePasses: number
   ): { isEndGame: boolean; reason: string } {
@@ -183,7 +194,7 @@ export class GameRuleValidator {
    */
   calculateFinalScores(
     playerScores: { [playerId: string]: number },
-    playerRacks: { [playerId: string]: any[] },
+    playerRacks: { [playerId: string]: PlayerLetter[] },
     lastPlayerToPlay: string
   ): { scores: { [playerId: string]: number }; reason: string } {
     const finalScores = { ...playerScores };
@@ -222,7 +233,7 @@ export class GameRuleValidator {
    */
   validateAction(
     action: GameAction,
-    gameState: any,
+    gameState: GameState,
     playerId: string
   ): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
@@ -283,7 +294,7 @@ export class GameRuleValidator {
   validateWordPlacement(
     word: string,
     positions: { row: number; col: number }[],
-    existingLetters: any[],
+    existingLetters: PlacedLetter[],
     isFirstMove: boolean = false
   ): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];

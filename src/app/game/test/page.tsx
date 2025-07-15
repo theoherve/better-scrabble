@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { Grid, GridPosition, PlacedLetter } from "@/components/grid/Grid";
 import { PlayerRack, PlayerLetter } from "@/components/player-panel/PlayerRack";
-import { LetterBag, Letter } from "@/lib/dictionary/letters";
+import { LetterBag } from "@/lib/dictionary/letters";
 import { WordValidator, WordValidationResult } from "@/lib/dictionary/wordValidator";
 import { WordDisplay } from "@/components/grid/WordDisplay";
 import { ScoreDetails } from "@/components/grid/ScoreDetails";
-import { ScoreCalculator } from "@/lib/dictionary/scoreCalculator";
+import { ScoreCalculator, WordScore } from "@/lib/dictionary/scoreCalculator";
 
 export default function TestGamePage() {
   const [letterBag] = useState(() => {
@@ -34,7 +34,7 @@ export default function TestGamePage() {
     isValid: true,
     errors: []
   });
-  const [wordScores, setWordScores] = useState<any[]>([]);
+  const [wordScores, setWordScores] = useState<WordScore[]>([]);
 
   const handleLetterClick = (letterId: string) => {
     setSelectedLetterId(letterId);
@@ -144,7 +144,7 @@ export default function TestGamePage() {
             href="/" 
             className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
           >
-            ← Retour à l'accueil
+            ← Retour à l&apos;accueil
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Test de la Grille</h1>
           <p className="text-gray-600 mt-2">
@@ -240,7 +240,7 @@ export default function TestGamePage() {
                   <li>1. Cliquez sur une lettre de votre rack</li>
                   <li>2. Cliquez sur une case de la grille pour la placer</li>
                   <li>3. Formez des mots valides</li>
-                  <li>4. Cliquez sur "Valider le mot" pour tester</li>
+                  <li>4. Cliquez sur &quot;Valider le mot&quot; pour tester</li>
                 </ol>
               </div>
             </div>
