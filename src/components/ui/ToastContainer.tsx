@@ -25,6 +25,7 @@ export const ToastContainer = ({ toasts, onRemove }: ToastContainerProps) => {
             message={toast.message}
             type={toast.type}
             duration={toast.duration}
+            position="left"
             onClose={() => onRemove(toast.id)}
           />
         ))}
@@ -38,6 +39,7 @@ export const ToastContainer = ({ toasts, onRemove }: ToastContainerProps) => {
             message={toast.message}
             type={toast.type}
             duration={toast.duration}
+            position="right"
             onClose={() => onRemove(toast.id)}
           />
         ))}
