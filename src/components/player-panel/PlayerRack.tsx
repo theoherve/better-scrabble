@@ -16,6 +16,7 @@ interface PlayerRackProps {
   onChallengeWord?: () => void;
   canExchange?: boolean;
   canChallenge?: boolean;
+  onLetterDragStart?: (letterId: string, e: React.DragEvent) => void;
 }
 
 export const PlayerRack = ({
@@ -31,6 +32,7 @@ export const PlayerRack = ({
   onChallengeWord,
   canExchange = true,
   canChallenge = true,
+  onLetterDragStart,
 }: PlayerRackProps) => {
   const handleLetterClick = (letterId: string) => {
     const letter = letters.find(l => l.id === letterId);
@@ -40,6 +42,27 @@ export const PlayerRack = ({
     } else {
       onLetterClick?.(letterId);
     }
+  };
+
+  const handleLetterDragStart = (letterId: string, e: React.DragEvent) => {
+    if (!isMyTurn) {
+      e.preventDefault();
+      return;
+    }
+
+    const letter = letters.find(l => l.id === letterId);
+    if (letter?.letter === ' ') {
+      // Empêcher le drag des jokers non sélectionnés
+      e.preventDefault();
+      return;
+    }
+
+    // Définir les données de drag
+    e.dataTransfer.setData('text/plain', letterId);
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // Appeler le callback parent
+    onLetterDragStart?.(letterId, e);
   };
 
   return (
@@ -54,9 +77,12 @@ export const PlayerRack = ({
             score={letter.score}
             isSelected={selectedLetterId === letter.id}
             onClick={() => handleLetterClick(letter.id)}
+            draggable={isMyTurn && letter.letter !== ' '}
+            onDragStart={(e) => handleLetterDragStart(letter.id, e)}
             className={`
               w-[calc(100%/7-0.125rem)] h-8 sm:h-10 md:h-12 aspect-square cursor-pointer hover:scale-105 active:scale-95 transition-transform
               ${letter.letter === ' ' ? 'bg-yellow-100 border-yellow-300' : ''}
+              ${isMyTurn && letter.letter !== ' ' ? 'cursor-grab active:cursor-grabbing' : ''}
             `}
           />
         ))}

@@ -1,5 +1,3 @@
-
-
 export type TileType = 
   | "empty"
   | "letter"
@@ -23,6 +21,13 @@ interface TileProps {
   isTemporary?: boolean;
   onClick?: () => void;
   className?: string;
+  draggable?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
+  onDragEnter?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
+  isDragOver?: boolean;
 }
 
 const getTileBackground = (type: TileType): string => {
@@ -87,9 +92,46 @@ export const Tile = ({
   isTemporary = false,
   onClick,
   className = "",
+  draggable = false,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnter,
+  onDragLeave,
+  isDragOver = false,
 }: TileProps) => {
   const hasLetter = letter && letter !== "";
   const isInteractive = onClick && !isPlaced;
+
+  const handleDragStart = (e: React.DragEvent) => {
+    if (onDragStart) {
+      onDragStart(e);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (onDragOver) {
+      onDragOver(e);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    if (onDrop) {
+      onDrop(e);
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    if (onDragEnter) {
+      onDragEnter(e);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (onDragLeave) {
+      onDragLeave(e);
+    }
+  };
 
   return (
     <div
@@ -100,6 +142,7 @@ export const Tile = ({
         ${isInteractive ? "cursor-pointer hover:ring-2 hover:ring-blue-300 active:scale-95 transition-transform" : ""}
         ${isPlaced ? "shadow-md" : ""}
         ${isTemporary ? "border-2 border-dashed border-blue-400 bg-blue-50" : ""}
+        ${isDragOver ? "ring-2 ring-green-500 ring-offset-1 bg-green-50" : ""}
         ${className}
       `}
       onClick={isInteractive ? onClick : undefined}
@@ -112,6 +155,12 @@ export const Tile = ({
           onClick();
         }
       } : undefined}
+      draggable={draggable}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
     >
       {/* Bonus indicator */}
       {!hasLetter && type !== "empty" && (

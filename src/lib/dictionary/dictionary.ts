@@ -1,16 +1,15 @@
 // Dictionnaire français complet pour la validation des mots
-// Utilise le fichier JSON wordsFr.json
+// Utilise le fichier JSON dictionnaire.json
 
-import wordsData from "./wordsFr.json";
+import wordsData from "./dictionnaire.json";
 
 // Créer un Set pour une recherche rapide
 const FRENCH_WORDS = new Set<string>();
 
 // Charger tous les mots du JSON dans le Set
-Object.values(wordsData).forEach((wordList: string[]) => {
-  wordList.forEach((word) => {
-    FRENCH_WORDS.add(word.toLowerCase());
-  });
+// Le nouveau format est un tableau simple de mots
+wordsData.forEach((word: string) => {
+  FRENCH_WORDS.add(word.toLowerCase());
 });
 
 console.log(`Dictionnaire chargé: ${FRENCH_WORDS.size} mots français`);

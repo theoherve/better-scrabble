@@ -8,6 +8,7 @@ interface DictionaryTestProps {
 
 export const DictionaryTest = ({ isVisible = false, className = "" }: DictionaryTestProps) => {
   const [testWord, setTestWord] = useState("");
+  const [testedWord, setTestedWord] = useState("");
   const [testResults, setTestResults] = useState<{
     isValid: boolean;
     dictionarySize: number;
@@ -17,10 +18,17 @@ export const DictionaryTest = ({ isVisible = false, className = "" }: Dictionary
     if (testWord.trim()) {
       const isValid = isValidWord(testWord);
       const dictionarySize = getDictionarySize();
+      setTestedWord(testWord);
       setTestResults({
         isValid,
         dictionarySize
       });
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleTestWord();
     }
   };
 
@@ -40,6 +48,7 @@ export const DictionaryTest = ({ isVisible = false, className = "" }: Dictionary
               type="text"
               value={testWord}
               onChange={(e) => setTestWord(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="flex-1 px-2 py-1 text-xs border border-blue-300 rounded"
               placeholder="Entrez un mot..."
             />
@@ -58,9 +67,9 @@ export const DictionaryTest = ({ isVisible = false, className = "" }: Dictionary
               <p className="font-medium text-blue-700">
                 Taille du dictionnaire: {testResults.dictionarySize} mots
               </p>
-              {testWord && (
+              {testedWord && (
                 <p className={`font-medium ${testResults.isValid ? 'text-green-600' : 'text-red-600'}`}>
-                  &quot;{testWord}&quot; est {testResults.isValid ? 'valide' : 'invalide'}
+                  &quot;{testedWord}&quot; est {testResults.isValid ? 'valide' : 'invalide'}
                 </p>
               )}
             </div>
