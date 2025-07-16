@@ -336,8 +336,10 @@ export class GameRuleValidator {
 
     // Vérifier la connexion avec les mots existants (sauf premier coup)
     if (!isFirstMove && existingLetters.length > 0) {
-      const hasConnection = positions.some((position) =>
-        this.isConnectedToExistingWord(position, existingLetters)
+      // Vérifier que le mot est connecté aux mots existants
+      const hasConnection = this.isWordConnectedToExistingWords(
+        positions,
+        existingLetters
       );
       if (!hasConnection) {
         errors.push("Le mot doit être connecté à un mot existant");
@@ -348,6 +350,99 @@ export class GameRuleValidator {
       isValid: errors.length === 0,
       errors,
     };
+  }
+
+  /**
+   * Vérifie si un mot est connecté aux mots existants
+   */
+  private isWordConnectedToExistingWords(
+    positions: { row: number; col: number }[],
+    existingLetters: PlacedLetter[]
+  ): boolean {
+    // Si aucune lettre existante, pas de connexion possible
+    if (existingLetters.length === 0) {
+      return false;
+    }
+
+    // Vérifier que au moins une lettre du nouveau mot est adjacente à une lettre existante
+    const hasAdjacentConnection = positions.some((position) =>
+      this.isConnectedToExistingWord(position, existingLetters)
+    );
+
+    if (!hasAdjacentConnection) {
+      return false;
+    }
+
+    // Vérifier que toutes les lettres du nouveau mot sont connectées entre elles
+    // (soit adjacentes, soit faisant partie du même mot)
+
+    // Créer un graphe de connexion pour les nouvelles lettres
+    const connectedGroups = this.findConnectedGroups(positions);
+
+    // Vérifier que toutes les lettres sont dans le même groupe connecté
+    if (connectedGroups.length > 1) {
+      return false; // Le mot n'est pas connecté en un seul groupe
+    }
+
+    return true;
+  }
+
+  /**
+   * Trouve les groupes de lettres connectées
+   */
+  private findConnectedGroups(
+    positions: { row: number; col: number }[]
+  ): Set<string>[] {
+    if (positions.length === 0) return [];
+
+    const groups: Set<string>[] = [];
+    const visited = new Set<string>();
+
+    positions.forEach((position) => {
+      const posKey = `${position.row},${position.col}`;
+      if (!visited.has(posKey)) {
+        const group = new Set<string>();
+        this.dfsConnectedPositions(position, positions, group, visited);
+        groups.push(group);
+      }
+    });
+
+    return groups;
+  }
+
+  /**
+   * Parcours en profondeur pour trouver les positions connectées
+   */
+  private dfsConnectedPositions(
+    position: { row: number; col: number },
+    allPositions: { row: number; col: number }[],
+    group: Set<string>,
+    visited: Set<string>
+  ): void {
+    const posKey = `${position.row},${position.col}`;
+    if (visited.has(posKey)) return;
+
+    visited.add(posKey);
+    group.add(posKey);
+
+    // Trouver les positions adjacentes dans le même mot
+    const adjacentPositions = [
+      { row: position.row - 1, col: position.col },
+      { row: position.row + 1, col: position.col },
+      { row: position.row, col: position.col - 1 },
+      { row: position.row, col: position.col + 1 },
+    ];
+
+    adjacentPositions.forEach((adjPos) => {
+      const adjPosKey = `${adjPos.row},${adjPos.col}`;
+      const isInSameWord = allPositions.some(
+        (pos) => pos.row === adjPos.row && pos.col === adjPos.col
+      );
+
+      if (isInSameWord && !visited.has(adjPosKey)) {
+        this.dfsConnectedPositions(adjPos, allPositions, group, visited);
+      }
+    });
   }
 }
 

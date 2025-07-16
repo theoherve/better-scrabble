@@ -19,6 +19,7 @@ interface TileProps {
   isSelected?: boolean;
   isPlaced?: boolean;
   isTemporary?: boolean;
+  isAIMove?: boolean;
   onClick?: () => void;
   className?: string;
   draggable?: boolean;
@@ -90,6 +91,7 @@ export const Tile = ({
   isSelected = false,
   isPlaced = false,
   isTemporary = false,
+  isAIMove = false,
   onClick,
   className = "",
   draggable = false,
@@ -143,6 +145,7 @@ export const Tile = ({
         ${isPlaced ? "shadow-md" : ""}
         ${isTemporary ? "border-2 border-dashed border-blue-400 bg-blue-50" : ""}
         ${isDragOver ? "ring-2 ring-green-500 ring-offset-1 bg-green-50" : ""}
+        ${isAIMove ? "animate-ai-letter-placement" : ""}
         ${className}
       `}
       onClick={isInteractive ? onClick : undefined}

@@ -27,7 +27,7 @@ export default function TestGamePage() {
 
   const [placedLetters, setPlacedLetters] = useState<PlacedLetter[]>([]);
   const [selectedLetterId, setSelectedLetterId] = useState<string | undefined>();
-  const [selectedPosition, setSelectedPosition] = useState<GridPosition | undefined>();
+
   const [wordValidation, setWordValidation] = useState<WordValidationResult>({
     words: [],
     totalScore: 0,
@@ -40,7 +40,7 @@ export default function TestGamePage() {
     setSelectedLetterId(letterId);
   };
 
-  const handleLetterDragStart = (letterId: string, e: React.DragEvent) => {
+  const handleLetterDragStart = (letterId: string) => {
     // Le drag est géré par le composant PlayerRack
     console.log('Début du drag pour la lettre:', letterId);
   };
@@ -99,7 +99,6 @@ export default function TestGamePage() {
     }
 
     setSelectedLetterId(undefined);
-    setSelectedPosition(undefined);
   };
 
   const handleTileClick = (position: GridPosition) => {
@@ -158,7 +157,6 @@ export default function TestGamePage() {
     }
 
     setSelectedLetterId(undefined);
-    setSelectedPosition(undefined);
   };
 
   const handleValidateWord = () => {
@@ -176,7 +174,6 @@ export default function TestGamePage() {
   const handleReset = () => {
     setPlacedLetters([]);
     setSelectedLetterId(undefined);
-    setSelectedPosition(undefined);
     setWordValidation({
       words: [],
       totalScore: 0,

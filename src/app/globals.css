@@ -85,6 +85,36 @@ body {
   }
 }
 
+/* Animation pour les lettres placées par l'IA - translation depuis le rack */
+@keyframes aiLetterTranslation {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+    z-index: 50;
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-35px) scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1.0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    z-index: 1;
+  }
+}
+
+.animate-ai-letter-placement {
+  animation: aiLetterTranslation 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
@@ -95,6 +125,22 @@ body {
 
 .animate-pulse-slow {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animation de pulsation pour le rack de l'IA */
+@keyframes aiRackPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-ai-rack-pulse {
+  animation: aiRackPulse 1.5s ease-in-out infinite;
 }
 
 /* Mobile optimizations */
