@@ -11,6 +11,7 @@ import { MobileNav } from "@/components/ui/MobileNav";
 import { ToastContainer } from "@/components/ui/ToastContainer";
 import { GameStats } from "@/components/ui/GameStats";
 import { DictionaryTest } from "@/components/ui/DictionaryTest";
+import AIStrategyDisplay from "@/components/ui/AIStrategyDisplay";
 import { useToast } from "@/hooks/useToast";
 import { LetterBag, Letter } from "@/lib/dictionary/letters";
 import { WordValidator, WordValidationResult } from "@/lib/dictionary/wordValidator";
@@ -84,6 +85,10 @@ function SoloPlayPageContent() {
   const [showJokerSelector, setShowJokerSelector] = useState(false);
   const [jokerLetterId, setJokerLetterId] = useState<string>('');
   const [showLetterExchange, setShowLetterExchange] = useState(false);
+  
+  // États pour l'affichage des stratégies de l'IA
+  const [aiStrategy, setAiStrategy] = useState<string>('');
+  const [showAIStrategy, setShowAIStrategy] = useState(false);
 
   // Vérifier la fin de partie
   useEffect(() => {
@@ -170,11 +175,21 @@ function SoloPlayPageContent() {
     );
 
     if (aiMove) {
-      // Placer le mot de l'IA
-      const newPlacedLetters: PlacedLetter[] = [...gameState.placedLetters];
+      // Afficher la stratégie de l'IA
+      if (aiMove.strategy) {
+        setAiStrategy(aiMove.strategy);
+        setShowAIStrategy(true);
+        
+        // Masquer la stratégie après 3 secondes
+        setTimeout(() => {
+          setShowAIStrategy(false);
+        }, 3000);
+      }
+      
+      // Créer les lettres de l'IA avec la propriété isAIMove
+      const aiLetters: PlacedLetter[] = [];
       const usedLetters: Letter[] = [];
       
-      // Simuler le placement du mot complet
       for (let i = 0; i < aiMove.word.length; i++) {
         const letter = gameState.aiRack.find(l => 
           l.letter.toLowerCase() === aiMove.word[i] && 
@@ -182,13 +197,14 @@ function SoloPlayPageContent() {
         );
         
         if (letter) {
-          newPlacedLetters.push({
+          aiLetters.push({
             letter: letter.letter,
             score: letter.score,
             position: { 
               row: aiMove.position.row, 
               col: aiMove.position.col + i 
-            }
+            },
+            isAIMove: true
           });
           usedLetters.push(letter);
         }
@@ -203,10 +219,32 @@ function SoloPlayPageContent() {
       const newLetters = letterBag.draw(usedLetters.length);
       newAIRack.push(...newLetters);
 
+      // Placer les lettres une par une avec un délai pour l'animation
+      let currentPlacedLetters = [...gameState.placedLetters];
+      
+      for (let i = 0; i < aiLetters.length; i++) {
+        // Ajouter la lettre actuelle
+        currentPlacedLetters = [...currentPlacedLetters, aiLetters[i]];
+        
+        // Mettre à jour l'état pour afficher la lettre avec animation
+        setGameState(prev => ({
+          ...prev,
+          placedLetters: currentPlacedLetters
+        }));
+        
+        // Attendre avant de placer la lettre suivante (sauf pour la dernière)
+        if (i < aiLetters.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
+
+      // Attendre que l'animation de la dernière lettre se termine
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Mettre à jour l'état final avec le rack de l'IA et le score
       setGameState(prev => ({
         ...prev,
         aiRack: newAIRack,
-        placedLetters: newPlacedLetters,
         aiScore: prev.aiScore + aiMove.score,
         currentTurn: 'player',
         consecutivePasses: 0,
@@ -545,6 +583,12 @@ function SoloPlayPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 md:p-4 overflow-x-hidden">
+      {/* Affichage de la stratégie de l'IA */}
+      <AIStrategyDisplay 
+        strategy={aiStrategy} 
+        isVisible={showAIStrategy} 
+      />
+      
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
@@ -723,7 +767,7 @@ function SoloPlayPageContent() {
                       key={letter.id}
                       className={`w-10 h-10 border rounded flex items-center justify-center font-bold transition-all duration-300 ${
                         gameState.currentTurn === 'ai' && !gameState.gameOver
-                          ? 'bg-purple-500 border-purple-400 text-white'
+                          ? 'bg-purple-500 border-purple-400 text-white animate-ai-rack-pulse'
                           : 'bg-gray-700 border-gray-600 text-white'
                       }`}
                     >

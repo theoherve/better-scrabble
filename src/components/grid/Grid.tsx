@@ -11,6 +11,7 @@ export type PlacedLetter = {
   score: number;
   position: GridPosition;
   isTemporary?: boolean;
+  isAIMove?: boolean;
 };
 
 interface GridProps {
@@ -77,14 +78,15 @@ const getTileType = (row: number, col: number): TileType => {
 const getLetterAtPosition = (
   position: GridPosition,
   placedLetters: PlacedLetter[]
-): { letter: string; score: number; isTemporary: boolean } | null => {
+): { letter: string; score: number; isTemporary: boolean; isAIMove: boolean } | null => {
   const letter = placedLetters.find(
     (l) => l.position.row === position.row && l.position.col === position.col
   );
   return letter ? { 
     letter: letter.letter, 
     score: letter.score, 
-    isTemporary: letter.isTemporary || false 
+    isTemporary: letter.isTemporary || false,
+    isAIMove: letter.isAIMove || false
   } : null;
 };
 
@@ -190,6 +192,7 @@ export const Grid = ({
                   isSelected={isSelected}
                   isPlaced={!!letterData}
                   isTemporary={letterData?.isTemporary}
+                  isAIMove={letterData?.isAIMove}
                   onClick={() => handleTileClick(row, col)}
                   onDragOver={(e) => handleDragOver(e, position)}
                   onDrop={(e) => handleDrop(e, position)}
