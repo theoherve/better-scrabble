@@ -109,10 +109,7 @@ export class SimpleAI {
       };
 
       // Calculer le score et identifier les bonus
-      analysis.score = this.calculateWordScore(
-        wordInfo.word,
-        wordInfo.positions
-      );
+      analysis.score = this.calculateWordScore(wordInfo.word);
       analysis.bonusUsed = this.hasBonus(wordInfo.positions);
       analysis.connectionPoints = this.countConnectionPoints(
         wordInfo.positions,
@@ -155,10 +152,7 @@ export class SimpleAI {
 
     // 4. Mots courts mais stratégiques (pour les difficultés élevées)
     if (this.difficulty === "hard") {
-      const strategicWords = this.generateStrategicWords(
-        letters,
-        existingWords
-      );
+      const strategicWords = this.generateStrategicWords(letters);
       words.push(...strategicWords);
     }
 
@@ -234,10 +228,7 @@ export class SimpleAI {
   /**
    * Génère des mots stratégiques pour les placements difficiles
    */
-  private generateStrategicWords(
-    letters: string[],
-    existingWords: WordAnalysis[]
-  ): string[] {
+  private generateStrategicWords(letters: string[]): string[] {
     const words: string[] = [];
 
     // Mots de 2-3 lettres qui peuvent créer des connexions multiples
@@ -411,7 +402,7 @@ export class SimpleAI {
   /**
    * Calcule le score d'un mot
    */
-  private calculateWordScore(word: string, positions: GridPosition[]): number {
+  private calculateWordScore(word: string): number {
     // Score de base (simplifié)
     const letterScores: { [key: string]: number } = {
       a: 1,
@@ -918,9 +909,6 @@ export class SimpleAI {
   private selectBestMove(moves: AIMove[]): AIMove {
     // Trier par score décroissant
     moves.sort((a, b) => b.score - a.score);
-
-    // Filtrer les coups selon la difficulté
-    let filteredMoves = moves;
 
     switch (this.difficulty) {
       case "easy":

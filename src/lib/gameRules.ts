@@ -375,9 +375,6 @@ export class GameRuleValidator {
 
     // Vérifier que toutes les lettres du nouveau mot sont connectées entre elles
     // (soit adjacentes, soit faisant partie du même mot)
-    const allNewPositions = new Set(
-      positions.map((pos) => `${pos.row},${pos.col}`)
-    );
 
     // Créer un graphe de connexion pour les nouvelles lettres
     const connectedGroups = this.findConnectedGroups(positions);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Grid, GridPosition, PlacedLetter } from "@/components/grid/Grid";
@@ -153,16 +153,9 @@ function SoloPlayPageContent() {
       });
       setWordScores([]);
     }
-  }, [gameState.tempPlacedLetters, gameState.placedLetters]);
+  }, [gameState.tempPlacedLetters, gameState.placedLetters, gameState.isPlacingWord]);
 
-  // Gestion du tour de l'IA
-  useEffect(() => {
-    if (gameState.currentTurn === 'ai' && !gameState.gameOver && !isThinking) {
-      handleAITurn();
-    }
-  }, [gameState.currentTurn, gameState.gameOver, isThinking, ai, gameState.aiRack, gameState.placedLetters, letterBag]);
-
-  const handleAITurn = async () => {
+  const handleAITurn = useCallback(async () => {
     setIsThinking(true);
     
     // Simuler un délai de réflexion
@@ -264,7 +257,14 @@ function SoloPlayPageContent() {
     }
 
     setIsThinking(false);
-  };
+  }, [ai, gameState.aiRack, gameState.placedLetters, letterBag, success, info]);
+
+  // Gestion du tour de l'IA
+  useEffect(() => {
+    if (gameState.currentTurn === 'ai' && !gameState.gameOver && !isThinking) {
+      handleAITurn();
+    }
+  }, [gameState.currentTurn, gameState.gameOver, isThinking, handleAITurn]);
 
   const handleLetterClick = (letterId: string) => {
     if (gameState.currentTurn !== 'player' || gameState.gameOver) return;
