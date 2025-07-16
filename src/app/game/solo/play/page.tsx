@@ -241,6 +241,79 @@ function SoloPlayPageContent() {
     }
   };
 
+  const handleLetterDragStart = (letterId: string, e: React.DragEvent) => {
+    if (gameState.currentTurn !== 'player' || gameState.gameOver) {
+      e.preventDefault();
+      return;
+    }
+
+    const letter = gameState.playerRack.find(l => l.id === letterId);
+    if (letter?.letter === ' ') {
+      // Empêcher le drag des jokers non sélectionnés
+      e.preventDefault();
+      return;
+    }
+
+    console.log('Début du drag pour la lettre:', letterId);
+  };
+
+  const handleLetterDrop = (letterId: string, position: GridPosition) => {
+    if (gameState.currentTurn !== 'player' || gameState.gameOver) return;
+
+    // Vérifier si la position est déjà occupée (par des lettres permanentes ou temporaires)
+    const isOccupied = [...gameState.placedLetters, ...gameState.tempPlacedLetters].some(
+      letter => letter.position.row === position.row && letter.position.col === position.col
+    );
+
+    if (isOccupied) {
+      error('Cette position est déjà occupée', undefined, 'right');
+      return;
+    }
+
+    // Valider le placement selon les règles
+    const isFirstMove = gameState.placedLetters.length === 0 && gameState.tempPlacedLetters.length === 0;
+    const placementValidation = ruleValidator.validatePlacement(
+      position,
+      gameState.placedLetters, // Seules les lettres permanentes pour la connexion
+      isFirstMove
+    );
+
+    if (!placementValidation.isValid) {
+      error(placementValidation.errors[0], undefined, 'right');
+      return;
+    }
+
+    // Trouver la lettre sélectionnée
+    const selectedLetter = gameState.playerRack.find(letter => letter.id === letterId);
+    if (!selectedLetter) return;
+
+    // Placer la lettre temporairement
+    const newTempLetter: PlacedLetter = {
+      letter: selectedLetter.letter,
+      score: selectedLetter.score,
+      position,
+      isTemporary: true
+    };
+
+    const newTempPlacedLetters = [...gameState.tempPlacedLetters, newTempLetter];
+    
+    // Mettre à jour l'état avec les lettres temporaires
+    setGameState(prev => ({
+      ...prev,
+      tempPlacedLetters: newTempPlacedLetters,
+      isPlacingWord: true
+    }));
+
+    // Retirer la lettre du rack temporairement
+    const newPlayerRack = gameState.playerRack.filter(letter => letter.id !== letterId);
+    setGameState(prev => ({
+      ...prev,
+      playerRack: newPlayerRack
+    }));
+
+    setSelectedLetterId(undefined);
+  };
+
   const handleJokerSelect = (selectedLetter: string) => {
     // Créer une nouvelle lettre avec la lettre sélectionnée
     const jokerLetter = gameState.playerRack.find(l => l.id === jokerLetterId);
@@ -600,6 +673,8 @@ function SoloPlayPageContent() {
                 <Grid
                   placedLetters={[...gameState.placedLetters, ...gameState.tempPlacedLetters]}
                   onTileClick={handleTileClick}
+                  onLetterDrop={handleLetterDrop}
+                  isMyTurn={isMyTurn}
                   className={`max-w-full transition-all duration-300 ${
                     gameState.currentTurn === 'ai' && !gameState.gameOver
                       ? 'opacity-75'
@@ -618,6 +693,7 @@ function SoloPlayPageContent() {
                 letters={gameState.playerRack}
                 selectedLetterId={selectedLetterId}
                 onLetterClick={handleLetterClick}
+                onLetterDragStart={handleLetterDragStart}
                 isMyTurn={isMyTurn}
                 showActions={true}
                 onPassTurn={handlePassTurn}

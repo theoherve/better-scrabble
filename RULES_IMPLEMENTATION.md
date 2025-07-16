@@ -147,7 +147,7 @@ Ce document décrit les règles officielles du Scrabble français qui ont été 
 
 - **Distribution officielle** : [Wikipedia - Lettres du Scrabble](https://fr.wikipedia.org/wiki/Lettres_du_Scrabble)
 - **Règles officielles** : [Wikipedia - Scrabble](https://fr.wikipedia.org/wiki/Scrabble)
-- **Dictionnaire** : L'Officiel du jeu Scrabble (implémenté avec wordsFr.json)
+- **Dictionnaire** : L'Officiel du jeu Scrabble (implémenté avec dictionnaire.json)
 
 ## 🚀 Améliorations Futures
 

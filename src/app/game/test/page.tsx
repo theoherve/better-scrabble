@@ -40,6 +40,68 @@ export default function TestGamePage() {
     setSelectedLetterId(letterId);
   };
 
+  const handleLetterDragStart = (letterId: string, e: React.DragEvent) => {
+    // Le drag est géré par le composant PlayerRack
+    console.log('Début du drag pour la lettre:', letterId);
+  };
+
+  const handleLetterDrop = (letterId: string, position: GridPosition) => {
+    // Vérifier si la position est déjà occupée
+    const isOccupied = placedLetters.some(
+      letter => letter.position.row === position.row && letter.position.col === position.col
+    );
+
+    if (isOccupied) return;
+
+    // Trouver la lettre sélectionnée
+    const selectedLetter = playerRack.find(letter => letter.id === letterId);
+    if (!selectedLetter) return;
+
+    // Placer la lettre
+    const newPlacedLetter: PlacedLetter = {
+      letter: selectedLetter.letter,
+      score: selectedLetter.score,
+      position
+    };
+
+    const newPlacedLetters = [...placedLetters, newPlacedLetter];
+    setPlacedLetters(newPlacedLetters);
+    
+    // Valider les mots formés
+    const validation = WordValidator.validateGrid(newPlacedLetters);
+    setWordValidation(validation);
+    
+    // Calculer les scores détaillés
+    if (validation.words.length > 0) {
+      const scores = ScoreCalculator.calculateTotalScore(
+        validation.words.map(word => ({ word: word.word, positions: word.positions })),
+        newPlacedLetters
+      );
+      setWordScores(scores.wordScores);
+    } else {
+      setWordScores([]);
+    }
+    
+    // Retirer la lettre du rack et en tirer une nouvelle
+    const newRack = playerRack.filter(letter => letter.id !== letterId);
+    const newLetter = letterBag.draw(1)[0];
+    if (newLetter) {
+      setPlayerRack([
+        ...newRack,
+        {
+          letter: newLetter.letter,
+          score: newLetter.score,
+          id: newLetter.id
+        }
+      ]);
+    } else {
+      setPlayerRack(newRack);
+    }
+
+    setSelectedLetterId(undefined);
+    setSelectedPosition(undefined);
+  };
+
   const handleTileClick = (position: GridPosition) => {
     if (!selectedLetterId) return;
 
@@ -157,11 +219,12 @@ export default function TestGamePage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Grille de Scrabble</h2>
-              <div className="flex justify-center">
+              <div className="flex justify-center overflow-x-auto">
                 <Grid
                   placedLetters={placedLetters}
-                  selectedPosition={selectedPosition}
                   onTileClick={handleTileClick}
+                  onLetterDrop={handleLetterDrop}
+                  isMyTurn={true}
                 />
               </div>
               
@@ -198,6 +261,8 @@ export default function TestGamePage() {
                 letters={playerRack}
                 selectedLetterId={selectedLetterId}
                 onLetterClick={handleLetterClick}
+                onLetterDragStart={handleLetterDragStart}
+                isMyTurn={true}
               />
 
               {/* Mots formés */}

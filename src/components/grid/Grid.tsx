@@ -1,4 +1,5 @@
 import { Tile, TileType } from "../tile/Tile";
+import { useState } from "react";
 
 export type GridPosition = {
   row: number;
@@ -17,6 +18,8 @@ interface GridProps {
   selectedPosition?: GridPosition;
   onTileClick?: (position: GridPosition) => void;
   className?: string;
+  onLetterDrop?: (letterId: string, position: GridPosition) => void;
+  isMyTurn?: boolean;
 }
 
 // Configuration officielle de la grille Scrabble
@@ -90,10 +93,77 @@ export const Grid = ({
   selectedPosition,
   onTileClick,
   className = "",
+  onLetterDrop,
+  isMyTurn = false,
 }: GridProps) => {
+  const [dragOverPosition, setDragOverPosition] = useState<GridPosition | null>(null);
+
   const handleTileClick = (row: number, col: number) => {
     if (onTileClick) {
       onTileClick({ row, col });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent, position: GridPosition) => {
+    if (!isMyTurn) return;
+    
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    // Vérifier si la position est déjà occupée
+    const isOccupied = placedLetters.some(
+      letter => letter.position.row === position.row && letter.position.col === position.col
+    );
+    
+    if (!isOccupied) {
+      setDragOverPosition(position);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, position: GridPosition) => {
+    if (!isMyTurn) return;
+    
+    e.preventDefault();
+    
+    // Vérifier si la position est déjà occupée
+    const isOccupied = placedLetters.some(
+      letter => letter.position.row === position.row && letter.position.col === position.col
+    );
+    
+    if (isOccupied) {
+      setDragOverPosition(null);
+      return;
+    }
+
+    const letterId = e.dataTransfer.getData('text/plain');
+    if (letterId && onLetterDrop) {
+      onLetterDrop(letterId, position);
+    }
+    
+    setDragOverPosition(null);
+  };
+
+  const handleDragEnter = (e: React.DragEvent, position: GridPosition) => {
+    if (!isMyTurn) return;
+    
+    // Vérifier si la position est déjà occupée
+    const isOccupied = placedLetters.some(
+      letter => letter.position.row === position.row && letter.position.col === position.col
+    );
+    
+    if (!isOccupied) {
+      setDragOverPosition(position);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Vérifier si on quitte vraiment la zone de drop
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setDragOverPosition(null);
     }
   };
 
@@ -109,6 +179,7 @@ export const Grid = ({
             const tileType = getTileType(row, col);
             const letterData = getLetterAtPosition(position, placedLetters);
             const isSelected = selectedPosition?.row === row && selectedPosition?.col === col;
+            const isDragOver = dragOverPosition?.row === row && dragOverPosition?.col === col;
 
             return (
               <div key={`${row}-${col}`} className="w-full h-full aspect-square">
@@ -120,6 +191,11 @@ export const Grid = ({
                   isPlaced={!!letterData}
                   isTemporary={letterData?.isTemporary}
                   onClick={() => handleTileClick(row, col)}
+                  onDragOver={(e) => handleDragOver(e, position)}
+                  onDrop={(e) => handleDrop(e, position)}
+                  onDragEnter={(e) => handleDragEnter(e, position)}
+                  onDragLeave={handleDragLeave}
+                  isDragOver={isDragOver}
                   className="border-gray-800"
                 />
               </div>

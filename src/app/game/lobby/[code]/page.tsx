@@ -97,6 +97,96 @@ export default function MultiplayerGamePage() {
     setSelectedLetterId(letterId);
   };
 
+  const handleLetterDragStart = (letterId: string, e: React.DragEvent) => {
+    if (!isMyTurn) {
+      e.preventDefault();
+      return;
+    }
+
+    const letter = myRack.find(l => l.id === letterId);
+    if (letter?.letter === ' ') {
+      // Empêcher le drag des jokers non sélectionnés
+      e.preventDefault();
+      return;
+    }
+
+    console.log('Début du drag pour la lettre:', letterId);
+  };
+
+  const handleLetterDrop = (letterId: string, position: GridPosition) => {
+    if (!isMyTurn) return;
+
+    // Vérifier si la position est déjà occupée
+    const isOccupied = gameState.placedLetters.some(
+      letter => letter.position.row === position.row && letter.position.col === position.col
+    );
+
+    if (isOccupied) return;
+
+    // Trouver la lettre sélectionnée
+    const selectedLetter = myRack.find(letter => letter.id === letterId);
+    if (!selectedLetter) return;
+
+    // Placer la lettre
+    const newPlacedLetter: PlacedLetter = {
+      letter: selectedLetter.letter,
+      score: selectedLetter.score,
+      position
+    };
+
+    const newPlacedLetters = [...gameState.placedLetters, newPlacedLetter];
+    
+    // Valider les mots formés
+    const validation = WordValidator.validateGrid(newPlacedLetters);
+    setWordValidation(validation);
+    
+    if (validation.isValid && validation.words.length > 0) {
+      // Calculer les scores détaillés
+      const scores = ScoreCalculator.calculateTotalScore(
+        validation.words.map(word => ({ word: word.word, positions: word.positions })),
+        newPlacedLetters
+      );
+      setWordScores(scores.wordScores);
+
+      // Mettre à jour l'état du jeu
+      const newScore = myScore + validation.totalScore;
+      const newRack = myRack.filter(letter => letter.id !== letterId);
+      const newLetter = letterBag.draw(1)[0];
+      
+      if (newLetter) {
+        newRack.push({
+          letter: newLetter.letter,
+          score: newLetter.score,
+          id: newLetter.id
+        });
+      }
+
+      // Passer au tour suivant
+      const currentPlayerIndex = lobby.players.findIndex(p => p.id === player.id);
+      const nextPlayerIndex = (currentPlayerIndex + 1) % lobby.players.length;
+      const nextPlayer = lobby.players[nextPlayerIndex];
+
+      setGameState(prev => ({
+        ...prev,
+        placedLetters: newPlacedLetters,
+        playerScores: {
+          ...prev.playerScores,
+          [player.id]: newScore
+        },
+        playerRacks: {
+          ...prev.playerRacks,
+          [player.id]: newRack
+        },
+        currentTurn: nextPlayer.id
+      }));
+
+      setSelectedLetterId(undefined);
+    } else {
+      // Coup invalide, remettre la lettre
+      setSelectedLetterId(undefined);
+    }
+  };
+
   const handleTileClick = (position: GridPosition) => {
     if (!isMyTurn || !selectedLetterId) return;
 
@@ -268,6 +358,8 @@ export default function MultiplayerGamePage() {
                 <Grid
                   placedLetters={gameState.placedLetters}
                   onTileClick={handleTileClick}
+                  onLetterDrop={handleLetterDrop}
+                  isMyTurn={isMyTurn}
                 />
               </div>
             </div>
@@ -281,6 +373,7 @@ export default function MultiplayerGamePage() {
                 letters={myRack}
                 selectedLetterId={selectedLetterId}
                 onLetterClick={handleLetterClick}
+                onLetterDragStart={handleLetterDragStart}
               />
 
               {/* Mots formés */}
